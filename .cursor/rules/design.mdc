@@ -1,0 +1,16 @@
+---
+description: Design enforcement for Wasted Spend UI
+globs: ["app/**/*.tsx", "app/**/*.css", "components/**/*.tsx"]
+---
+
+Before writing any UI code, check .cursor/skills/frontend-design.md
+
+Wasted Spend design rules:
+- Background is always #0a0f1a not bg-slate-950
+- Brand green is always #0d9f6e not emerald-500 or #10b981
+- Hero numbers: 48-52px, font-weight 600, letter-spacing -0.03em, color #0d9f6e
+- Section labels: 11px, uppercase, letter-spacing 0.07em, color #4b5563
+- Card borders: 1px solid rgba(255,255,255,0.07) — never heavier
+- Never use amber/yellow for data values — only for warning states
+- Buttons: primary = bg #0d9f6e text white, secondary = transparent border rgba(13,159,110,0.35) text #0d9f6e
+- All spacing on a strict 8px grid

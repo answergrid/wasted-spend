@@ -1,0 +1,106 @@
+# Project: Wasted Spend
+# wastedspend.app
+# Founder constraints — always respect these
+
+## What this product is
+A self-serve SaaS tool for Google Ads advertisers.
+Automated negative keyword management — finds wasted spend and blocks it.
+$29/month flat subscription.
+Live at wastedspend.app
+
+## Stack
+- Next.js 14, TypeScript, Tailwind
+- Supabase (Postgres)
+- Stripe for billing (live mode)
+- Google Ads API (Basic Access pending)
+- Vercel for hosting
+- Resend for email
+
+## Core business constraints
+- Zero manual marketing or sales by the founder
+- Grows only through organic discovery:
+  * Google Ads Partner Marketplace
+  * SEO for high-intent search terms
+  * Word of mouth from visible results
+- Fully automated — no human in the loop for value delivery
+- Minimal ongoing maintenance after launch
+
+## Build principles
+- Every feature must work without founder involvement
+- No features that require manual setup per customer
+- Simple is always better than complex
+- Automate everything that recurs
+- Ship the narrowest possible v1 of any feature
+
+## What NOT to build
+- Anything requiring customer support to use
+- Dashboards with no action attached
+- Features that only provide insights without automation
+- Anything that requires the founder to intervene per customer
+
+## Design standard — ALWAYS APPLY
+When building or updating ANY UI component, page, or visual element:
+
+Read and apply: .cursor/skills/frontend-design.md
+Read and apply: .cursor/skills/ui-ux-pro-max/ (if present)
+
+Wasted Spend visual identity:
+- Background: #0a0f1a
+- Brand green: #0d9f6e
+- Text primary: #e8eaf0
+- Text muted: #4b5563
+- Text dimmed: #374151
+- Border default: rgba(255,255,255,0.06)
+- Border hover: rgba(255,255,255,0.1)
+- Card background: rgba(255,255,255,0.03)
+- Font: Inter (current) — consider upgrading to DM Sans or Geist
+- Letter spacing on headings: -0.02em to -0.03em
+- All section labels: 11px, font-weight 500, letter-spacing 0.07em, uppercase, color #4b5563
+
+Never use:
+- Tailwind emerald-500 (#10b981) — use #0d9f6e instead
+- bg-slate-950 — use #0a0f1a
+- Heavy card borders
+- Amber/yellow for data values (only for warnings)
+- Bold text everywhere — use weight contrast deliberately
+
+## Pricing
+- Free: see top 3 wasted searches, one on-demand scan
+- Pro ($29/mo): all searches, one-click blocking, weekly automated scans, email digest, blocked library, waste checker
+
+## Key routes
+- / — landing page
+- /dashboard — main product (requires Google OAuth)
+- /blog/* — SEO content
+- /privacy — privacy policy
+- /api/auth/google — OAuth initiation
+- /api/auth/google/callback — OAuth callback
+- /api/ads/search-terms — fetch wasted searches
+- /api/ads/add-negative — block a search
+- /api/ads/blocked-searches — fetch blocked library
+- /api/ads/check-term — waste risk checker (Pro)
+- /api/stripe/checkout — create checkout session
+- /api/stripe/webhook — handle payment events
+- /api/stripe/portal — customer portal
+- /api/cron/weekly-digest — Monday email (cron)
+
+## Supabase tables
+- connected_accounts (email, access_token, refresh_token, is_paid, needs_reconnect)
+- blocked_searches (account_email, search_term, cost_at_block, impressions_at_block, blocked_at, is_active)
+- scan_history (account_email, total_wasted, term_count, health_score, scanned_at)
+- term_checks (account_email, search_term, risk_level, reasons, checked_at)
+
+## Environment variables (all required)
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET
+GOOGLE_ADS_CLIENT_ID
+GOOGLE_ADS_CLIENT_SECRET
+GOOGLE_ADS_DEVELOPER_TOKEN
+GOOGLE_ADS_CUSTOMER_ID
+GOOGLE_ADS_LOGIN_CUSTOMER_ID
+RESEND_API_KEY
+CRON_SECRET
+NEXT_PUBLIC_APP_URL=https://wastedspend.app
+MOCK_MODE=true (set to false when Google API Basic Access approved)

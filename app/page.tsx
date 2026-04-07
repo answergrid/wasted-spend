@@ -1,100 +1,190 @@
-import Image from "next/image";
+import Link from "next/link";
+import { LandingNav } from "@/components/landing-nav";
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="min-h-screen bg-app text-slate-100">
+      <header className="sticky top-0 z-50 bg-app/90 backdrop-blur-md">
+        <LandingNav />
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      <main>
+        {/* Hero */}
+        <section className="mx-auto max-w-4xl px-4 pb-16 pt-14 text-center sm:px-6 sm:pb-24 sm:pt-20 lg:px-8 lg:pt-24">
+          <h1
+            className="text-balance text-2xl font-semibold text-white sm:text-4xl lg:text-5xl"
+            style={{ letterSpacing: "-0.03em", lineHeight: 1.15 }}
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Stop paying for searches that don&apos;t convert.
+          </h1>
+          <p
+            className="mx-auto mt-5 max-w-2xl text-base sm:mt-6 sm:text-lg"
+            style={{ color: "#6b7280", fontWeight: 400 }}
           >
-            Read our docs
+            Connect your Google Ads account. We find the searches wasting your
+            budget. Block them in one click.
+          </p>
+          <div className="mt-10 flex flex-col items-center gap-3">
+            <Link
+              href="/dashboard"
+              className="inline-flex w-full max-w-sm items-center justify-center text-white transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand/50 focus:ring-offset-2 focus:ring-offset-[#0a0f1a] sm:w-auto"
+              style={{
+                background: "#0d9f6e",
+                borderRadius: 8,
+                fontSize: 14,
+                fontWeight: 500,
+                padding: "12px 24px",
+                letterSpacing: "-0.01em",
+              }}
+            >
+              See my wasted spend
+            </Link>
+            <p className="mt-2 text-sm text-slate-500">
+              Free scan included — no credit card required
+            </p>
+          </div>
+        </section>
+
+        {/* Social proof bar */}
+        <section className="border-y border-white/[0.06] bg-white/[0.02] py-8 sm:py-10">
+          <p className="mx-auto max-w-3xl px-4 text-center text-sm leading-relaxed text-slate-500 sm:px-6 sm:text-base">
+            The average Google Ads account wastes 23% of budget on irrelevant
+            searches.
+          </p>
+        </section>
+
+        {/* How it works */}
+        <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+          <h2 className="text-center text-2xl font-semibold text-white sm:text-3xl">
+            How it works
+          </h2>
+          <p className="mx-auto mt-3 max-w-lg text-center text-sm text-slate-400 sm:text-base">
+            Three steps to cut wasted spend without guesswork.
+          </p>
+          <ol className="mt-12 grid gap-10 md:grid-cols-3 md:gap-8">
+            <li className="relative rounded-2xl border border-subtle bg-card p-6 text-center md:text-left">
+              <span className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand-light text-sm font-bold text-brand md:mx-0">
+                1
+              </span>
+              <h3 className="text-lg font-semibold text-white">Connect</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-400">
+                Link your Google Ads account securely in one click
+              </p>
+            </li>
+            <li className="relative rounded-2xl border border-subtle bg-card p-6 text-center md:text-left">
+              <span className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand-light text-sm font-bold text-brand md:mx-0">
+                2
+              </span>
+              <h3 className="text-lg font-semibold text-white">Review</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-400">
+                See exactly which searches are wasting your budget
+              </p>
+            </li>
+            <li className="relative rounded-2xl border border-subtle bg-card p-6 text-center md:text-left">
+              <span className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand-light text-sm font-bold text-brand md:mx-0">
+                3
+              </span>
+              <h3 className="text-lg font-semibold text-white">Block</h3>
+              <p className="mt-2 text-sm leading-relaxed text-slate-400">
+                Stop paying for searches that never convert
+              </p>
+            </li>
+          </ol>
+        </section>
+
+        {/* Pricing */}
+        <section className="border-t border-white/[0.06] bg-white/[0.02] px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+          <div className="mx-auto max-w-2xl">
+            <h2 className="text-center text-2xl font-semibold text-white sm:text-3xl">
+              Pricing
+            </h2>
+
+            <div className="mt-10 grid gap-6 rounded-2xl border border-subtle bg-card p-6 sm:grid-cols-2 sm:p-8">
+              <div>
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
+                  Free
+                </h3>
+                <ul className="mt-4 space-y-2 text-sm text-slate-300">
+                  <li className="flex gap-2">
+                    <span className="text-slate-500" aria-hidden>
+                      —
+                    </span>
+                    See your top 3 wasted searches
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-slate-500" aria-hidden>
+                      —
+                    </span>
+                    One on-demand scan
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <p className="text-center text-2xl font-bold tracking-tight text-white sm:text-3xl">
+                  $29
+                  <span className="text-base font-medium text-slate-400 sm:text-lg">
+                    /mo
+                  </span>
+                </p>
+                <h3 className="mt-3 text-center text-sm font-semibold uppercase tracking-wide text-brand">
+                  Pro
+                </h3>
+                <ul className="mt-4 space-y-2 text-sm text-slate-300">
+                  <li className="flex gap-2">
+                    <span className="text-brand" aria-hidden>
+                      ✓
+                    </span>
+                    See all wasted searches
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-brand" aria-hidden>
+                      ✓
+                    </span>
+                    One-click blocking
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-brand" aria-hidden>
+                      ✓
+                    </span>
+                    Weekly automated scans
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-brand" aria-hidden>
+                      ✓
+                    </span>
+                    Email digest every Monday
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-brand" aria-hidden>
+                      ✓
+                    </span>
+                    Blocked searches library
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="text-brand" aria-hidden>
+                      ✓
+                    </span>
+                    Cancel anytime
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-white/[0.06] py-10">
+        <div className="px-4 text-center sm:px-6">
+          <p className="text-sm text-slate-500">
+            Wasted Spend — Built for Google Ads advertisers
+          </p>
+          <a
+            href="/privacy"
+            className="mt-3 inline-block text-sm text-slate-400 hover:text-white"
+          >
+            Privacy Policy
           </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
       </footer>
     </div>
   );
