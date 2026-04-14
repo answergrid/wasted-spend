@@ -17,6 +17,9 @@
  * alter table public.connected_accounts
  *   add column if not exists stripe_customer_id text;
  *
+ * alter table public.connected_accounts add column if not exists customer_id text;
+ * alter table public.connected_accounts add column if not exists accessible_customer_ids jsonb;
+ *
  * create index connected_accounts_email_idx on public.connected_accounts (email);
  *
  * alter table public.connected_accounts enable row level security;
@@ -26,6 +29,7 @@
  */
 
 import { NextResponse, type NextRequest } from "next/server";
+import { discoverDefaultCustomer } from "@/lib/google-ads/customer-discovery";
 import { createSupabaseServerClient } from "@/lib/supabase";
 
 function getRedirectUri(): string {
@@ -264,6 +268,36 @@ export async function GET(request: NextRequest) {
       dashboardUrl.searchParams.set("error", "database");
       return NextResponse.redirect(dashboardUrl);
     }
+  }
+
+  const devToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
+  if (devToken) {
+    try {
+      const discovered = await discoverDefaultCustomer(
+        accessToken,
+        devToken,
+        process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID ?? null
+      );
+      if (discovered) {
+        const { error: cidError } = await supabase
+          .from("connected_accounts")
+          .update({
+            customer_id: discovered.defaultId,
+            accessible_customer_ids: discovered.allIds,
+          })
+          .eq("email", email);
+
+        if (cidError) {
+          console.error("[google oauth] customer_id / accessible_customer_ids update failed:", cidError);
+        }
+      }
+    } catch (e) {
+      console.error("[google oauth] discoverDefaultCustomer failed:", e);
+    }
+  } else {
+    console.warn(
+      "[google oauth] GOOGLE_ADS_DEVELOPER_TOKEN not set; skipping listAccessibleCustomers"
+    );
   }
 
   dashboardUrl.searchParams.set("connected", "1");

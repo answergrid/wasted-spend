@@ -13,6 +13,7 @@ function json(data: unknown, status = 200) {
 type ConnectedAccountRow = {
   refresh_token: string;
   is_paid?: boolean | null;
+  customer_id?: string | null;
 };
 
 function parseCostImpressions(body: unknown): { cost: number; impressions: number } {
@@ -116,7 +117,7 @@ export async function POST(request: NextRequest) {
   const supabase = createSupabaseServerClient();
   const { data: account, error: accountError } = await supabase
     .from("connected_accounts")
-    .select("refresh_token, is_paid")
+    .select("refresh_token, is_paid, customer_id")
     .eq("email", cookieEmail)
     .maybeSingle();
 
@@ -147,24 +148,25 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const customerIdRaw = process.env.GOOGLE_ADS_CUSTOMER_ID;
+    const customerIdRaw = (account as ConnectedAccountRow | null)?.customer_id;
     const loginCustomerIdRaw = process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID;
     const campaignIdRaw = process.env.GOOGLE_ADS_CAMPAIGN_ID;
     const developerToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
     const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
     const clientSecret = process.env.GOOGLE_ADS_CLIENT_SECRET;
 
-    if (
-      !customerIdRaw ||
-      !loginCustomerIdRaw ||
-      !campaignIdRaw ||
-      !developerToken ||
-      !clientId ||
-      !clientSecret
-    ) {
+    if (!customerIdRaw?.trim()) {
+      return json(
+        {
+          error:
+            "No Google Ads customer on file. Reconnect your Google account so we can detect your account.",
+        },
+        400
+      );
+    }
+
+    if (!campaignIdRaw || !developerToken || !clientId || !clientSecret) {
       console.error("[ads/add-negative] Missing env:", {
-        hasCustomerId: Boolean(customerIdRaw),
-        hasLoginCustomerId: Boolean(loginCustomerIdRaw),
         hasCampaignId: Boolean(campaignIdRaw),
         hasDeveloperToken: Boolean(developerToken),
         hasClientId: Boolean(clientId),
@@ -173,18 +175,20 @@ export async function POST(request: NextRequest) {
       return json(
         {
           error:
-            "Missing required env: GOOGLE_ADS_CUSTOMER_ID, GOOGLE_ADS_LOGIN_CUSTOMER_ID, GOOGLE_ADS_CAMPAIGN_ID, GOOGLE_ADS_DEVELOPER_TOKEN, or OAuth client vars.",
+            "Missing required env: GOOGLE_ADS_CAMPAIGN_ID, GOOGLE_ADS_DEVELOPER_TOKEN, or OAuth client vars.",
         },
         500
       );
     }
 
     let customerId: string;
-    let loginCustomerId: string;
+    let loginCustomerId: string | undefined;
     let campaignId: string;
     try {
       customerId = normalizeCustomerId(customerIdRaw);
-      loginCustomerId = normalizeLoginCustomerId(loginCustomerIdRaw);
+      if (loginCustomerIdRaw?.trim()) {
+        loginCustomerId = normalizeLoginCustomerId(loginCustomerIdRaw);
+      }
       campaignId = normalizeCampaignId(campaignIdRaw);
     } catch (e) {
       console.error("[ads/add-negative] Invalid ID env:", e);
@@ -265,7 +269,9 @@ export async function POST(request: NextRequest) {
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "developer-token": developerToken,
-          "login-customer-id": loginCustomerId,
+          ...(loginCustomerId
+            ? { "login-customer-id": loginCustomerId }
+            : {}),
           "Content-Type": "application/json",
         },
         body: JSON.stringify(mutateBody),

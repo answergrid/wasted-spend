@@ -48,7 +48,7 @@ type GoogleAdsRow = {
 function normalizeCustomerId(raw: string): string {
   const digits = raw.replace(/\D/g, "");
   if (!digits) {
-    throw new Error("GOOGLE_ADS_CUSTOMER_ID has no digits");
+    throw new Error("Google Ads customer ID has no digits");
   }
   return digits;
 }
@@ -108,21 +108,31 @@ export type FetchWastedTermsResult =
     };
 
 /**
- * Fetches wasted search terms for a Google Ads account using the given refresh token.
+ * Fetches wasted search terms for the connected user's Google Ads customer.
+ * @param adsCustomerId — Digits-only customer ID from `connected_accounts.customer_id`
  */
 export async function fetchWastedSearchTerms(
-  refreshToken: string
+  refreshToken: string,
+  adsCustomerId: string | null
 ): Promise<FetchWastedTermsResult> {
   if (process.env.MOCK_MODE === "true") {
     return { ok: true, terms: [...MOCK_SEARCH_TERMS] };
   }
 
-  const customerIdRaw = process.env.GOOGLE_ADS_CUSTOMER_ID;
   const developerToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
   const clientId = process.env.GOOGLE_ADS_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_ADS_CLIENT_SECRET;
 
-  if (!customerIdRaw || !developerToken || !clientId || !clientSecret) {
+  if (!adsCustomerId?.trim()) {
+    return {
+      ok: false,
+      error:
+        "No Google Ads customer on file. Reconnect your Google account so we can detect your account.",
+      status: 400,
+    };
+  }
+
+  if (!developerToken || !clientId || !clientSecret) {
     return {
       ok: false,
       error: "Missing Google Ads or OAuth environment variables.",
@@ -132,9 +142,9 @@ export async function fetchWastedSearchTerms(
 
   let customerId: string;
   try {
-    customerId = normalizeCustomerId(customerIdRaw);
+    customerId = normalizeCustomerId(adsCustomerId);
   } catch {
-    return { ok: false, error: "Invalid GOOGLE_ADS_CUSTOMER_ID", status: 500 };
+    return { ok: false, error: "Invalid stored Google Ads customer ID.", status: 500 };
   }
 
   let tokenRes: Response;
@@ -194,16 +204,25 @@ export async function fetchWastedSearchTerms(
 
   const googleAdsUrl = `https://googleads.googleapis.com/v17/customers/${customerId}/googleAds:searchStream`;
 
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${accessToken}`,
+    "developer-token": developerToken,
+    "Content-Type": "application/json",
+  };
+  const loginCustomerRaw = process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID;
+  if (loginCustomerRaw?.trim()) {
+    try {
+      headers["login-customer-id"] = normalizeCustomerId(loginCustomerRaw);
+    } catch {
+      return { ok: false, error: "Invalid GOOGLE_ADS_LOGIN_CUSTOMER_ID.", status: 500 };
+    }
+  }
+
   let adsRes: Response;
   try {
     adsRes = await fetch(googleAdsUrl, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "developer-token": developerToken,
-        "login-customer-id": normalizeCustomerId(process.env.GOOGLE_ADS_CUSTOMER_ID!),
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({ query: GAQL_QUERY }),
     });
   } catch (e) {

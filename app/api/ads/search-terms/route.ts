@@ -14,6 +14,7 @@ function json(data: unknown, status = 200) {
 
 type ConnectedAccountRow = {
   refresh_token: string;
+  customer_id: string | null;
 };
 
 type WeekOverWeekPayload = {
@@ -153,7 +154,7 @@ export async function GET() {
 
     const { data: account, error: accountError } = await supabase
       .from("connected_accounts")
-      .select("refresh_token")
+      .select("refresh_token, customer_id")
       .eq("email", email)
       .maybeSingle();
 
@@ -168,7 +169,8 @@ export async function GET() {
       );
     }
 
-    const refreshToken = (account as ConnectedAccountRow | null)?.refresh_token;
+    const row = account as ConnectedAccountRow | null;
+    const refreshToken = row?.refresh_token;
     if (!refreshToken) {
       console.error("[ads/search-terms] No connected_accounts row for cookie email");
       return json(
@@ -177,10 +179,12 @@ export async function GET() {
       );
     }
 
+    const adsCustomerId = row?.customer_id ?? null;
+
     const blockedCount = await getActiveBlockedCount(supabase, email);
 
     if (process.env.MOCK_MODE === "true") {
-      const mock = await fetchWastedSearchTerms("mock");
+      const mock = await fetchWastedSearchTerms(refreshToken, adsCustomerId);
       if (!mock.ok) {
         return json({ error: mock.error }, mock.status ?? 500);
       }
@@ -206,7 +210,7 @@ export async function GET() {
       });
     }
 
-    const result = await fetchWastedSearchTerms(refreshToken);
+    const result = await fetchWastedSearchTerms(refreshToken, adsCustomerId);
     if (!result.ok) {
       if (result.reconnectRequired) {
         const { error: updateError } = await supabase
