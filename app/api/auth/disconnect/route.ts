@@ -1,11 +1,12 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { readGoogleAdsConnectedEmail } from "@/lib/cookies/google-ads-connected-email";
 import { createSupabaseServerClient } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
 export async function POST() {
-  const email = cookies().get("google_ads_connected_email")?.value?.trim();
+  const email = readGoogleAdsConnectedEmail(cookies());
   if (!email) {
     return NextResponse.json({ error: "Not authenticated." }, { status: 401 });
   }

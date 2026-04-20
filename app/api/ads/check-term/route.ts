@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { readGoogleAdsConnectedEmail } from "@/lib/cookies/google-ads-connected-email";
 import { createSupabaseServerClient } from "@/lib/supabase";
 import {
   findPatternMatches,
@@ -39,7 +40,7 @@ export type CheckTermResult = {
 };
 
 export async function POST(req: Request) {
-  const email = cookies().get("google_ads_connected_email")?.value?.trim();
+  const email = readGoogleAdsConnectedEmail(cookies());
   if (!email) {
     return json({ error: "Not authenticated." }, 401);
   }

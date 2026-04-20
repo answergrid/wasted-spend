@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { readGoogleAdsConnectedEmail } from "@/lib/cookies/google-ads-connected-email";
 import { createSupabaseServerClient } from "@/lib/supabase";
 import { BlockedSearchesLibrary } from "./blocked-searches-library";
 import { DashboardNav } from "./dashboard-nav";
@@ -29,7 +30,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const previewPro = searchParams.preview === "pro";
 
   const cookieStore = cookies();
-  const connectedEmail = cookieStore.get("google_ads_connected_email")?.value;
+  const connectedEmail = readGoogleAdsConnectedEmail(cookieStore);
   const isConnected = Boolean(connectedEmail);
 
   let isActuallyPaid = false;

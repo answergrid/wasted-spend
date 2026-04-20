@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { readGoogleAdsConnectedEmail } from "@/lib/cookies/google-ads-connected-email";
 import { createSupabaseServerClient } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
@@ -68,7 +69,7 @@ function mutateCampaignCriterionUrl(customerId: string): string {
 }
 
 export async function POST(request: NextRequest) {
-  const cookieEmail = cookies().get("google_ads_connected_email")?.value?.trim();
+  const cookieEmail = readGoogleAdsConnectedEmail(cookies());
   if (!cookieEmail) {
     return json({ error: "Not authenticated." }, 401);
   }

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { readGoogleAdsConnectedEmail } from "@/lib/cookies/google-ads-connected-email";
 import { createSupabaseServerClient } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +22,7 @@ function getAppBaseUrl(): string {
 /** Best-effort: only set when a Supabase row exists for the cookie email (never blocks checkout). */
 async function resolveVerifiedEmail(): Promise<string | undefined> {
   const cookieStore = cookies();
-  const cookieEmail = cookieStore.get("google_ads_connected_email")?.value?.trim();
+  const cookieEmail = readGoogleAdsConnectedEmail(cookieStore);
   if (!cookieEmail) return undefined;
 
   try {

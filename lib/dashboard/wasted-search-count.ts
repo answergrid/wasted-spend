@@ -1,11 +1,12 @@
 import { cookies, headers } from "next/headers";
+import { readGoogleAdsConnectedEmail } from "@/lib/cookies/google-ads-connected-email";
 
 /**
  * Server-only: fetch wasted search term count for dashboard copy (same data as /api/ads/search-terms).
  */
 export async function getWastedSearchTermCount(): Promise<number | null> {
   const cookieStore = cookies();
-  const email = cookieStore.get("google_ads_connected_email")?.value?.trim();
+  const email = readGoogleAdsConnectedEmail(cookieStore);
   if (!email) return null;
 
   const headerList = headers();

@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { readGoogleAdsConnectedEmail } from "@/lib/cookies/google-ads-connected-email";
 import { computeHealthScore } from "@/lib/dashboard/account-health-score";
 import { createSupabaseServerClient } from "@/lib/supabase";
 import { fetchWastedSearchTerms } from "@/lib/google-ads/wasted-search-terms";
@@ -149,7 +150,7 @@ export async function GET() {
   console.log("[search-terms] raw cookie:", emailCookie);
   console.log("[search-terms] email value:", emailCookie?.value);
 
-  const email = emailCookie?.value?.trim();
+  const email = readGoogleAdsConnectedEmail(cookieStore);
   if (!email) {
     return json({ error: "Not authenticated." }, 401);
   }

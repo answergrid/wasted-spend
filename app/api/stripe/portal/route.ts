@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
+import { readGoogleAdsConnectedEmail } from "@/lib/cookies/google-ads-connected-email";
 import { createSupabaseServerClient } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
@@ -30,7 +31,7 @@ export async function POST() {
     } as unknown as Stripe.StripeConfig);
 
     const cookieStore = cookies();
-    const email = cookieStore.get("google_ads_connected_email")?.value?.trim();
+    const email = readGoogleAdsConnectedEmail(cookieStore);
 
     if (!email) {
       return json({ error: "Not authenticated." }, 401);
