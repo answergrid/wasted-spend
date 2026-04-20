@@ -144,7 +144,12 @@ async function filterAlreadyBlocked<T extends { search_term: string }>(
 }
 
 export async function GET() {
-  const email = cookies().get("google_ads_connected_email")?.value?.trim();
+  const cookieStore = cookies();
+  const emailCookie = cookieStore.get("google_ads_connected_email");
+  console.log("[search-terms] raw cookie:", emailCookie);
+  console.log("[search-terms] email value:", emailCookie?.value);
+
+  const email = emailCookie?.value?.trim();
   if (!email) {
     return json({ error: "Not authenticated." }, 401);
   }
@@ -157,6 +162,11 @@ export async function GET() {
       .select("refresh_token, customer_id")
       .eq("email", email)
       .maybeSingle();
+
+    console.log(
+      "[search-terms] supabase result:",
+      JSON.stringify({ data: account, error: accountError })
+    );
 
     if (accountError) {
       console.error("[ads/search-terms] Supabase connected_accounts error:", accountError);

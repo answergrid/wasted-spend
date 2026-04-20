@@ -272,11 +272,23 @@ export async function GET(request: NextRequest) {
 
   const devToken = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
   if (devToken) {
+    console.log("[OAuth callback] Starting customer discovery");
+    console.log(
+      "[OAuth callback] Developer token present:",
+      Boolean(process.env.GOOGLE_ADS_DEVELOPER_TOKEN)
+    );
     try {
       const discovered = await discoverDefaultCustomer(
         accessToken,
         devToken,
         process.env.GOOGLE_ADS_LOGIN_CUSTOMER_ID ?? null
+      );
+      const customerId = discovered?.defaultId ?? null;
+      const accessibleIds = discovered?.allIds ?? [];
+      console.log("[OAuth callback] Discovered customer_id:", customerId);
+      console.log(
+        "[OAuth callback] Accessible customers:",
+        JSON.stringify(accessibleIds)
       );
       if (discovered) {
         const { error: cidError } = await supabase
@@ -292,7 +304,12 @@ export async function GET(request: NextRequest) {
         }
       }
     } catch (e) {
-      console.error("[google oauth] discoverDefaultCustomer failed:", e);
+      const err = e as Error & { status?: number };
+      console.error(
+        "[OAuth callback] Customer discovery failed:",
+        err.message,
+        err.status
+      );
     }
   } else {
     console.warn(
